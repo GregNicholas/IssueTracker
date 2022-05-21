@@ -1,2 +1,1 @@
-# IssueTrackerContext
-Created with CodeSandbox
+Issue tracking app with React and firebase
