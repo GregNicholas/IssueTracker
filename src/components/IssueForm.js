@@ -12,25 +12,26 @@ const IssueForm = (props) => {
   const { currentUser } = useAuth();
   const [error, setError] = useState("");
   const [issueSubmitted, setIssueSubmitted] = useState();
-  const { setFetchData } = useIssues();
+  // const { setFetchData } = useIssues();
   const { getDevelopers } = useRoles();
   const developers = getDevelopers();
-
+  console.log("issue form", props.issue)
+  const editIssue = props.issue;
   let navigate = useNavigate();
   const [issue, setIssue] = useState(() => {
     return {
-      issueID: props.issue ? props.issue.issueID : uniqueID(),
-      uid: currentUser.uid,
-      author: currentUser.displayName,
-      subject: props.issue ? props.issue.subject : "",
-      description: props.issue ? props.issue.description : "",
-      issueType: props.issue ? props.issue.issueType : "bug",
-      priority: props.issue ? props.issue.priority : "normal",
-      category: props.issue ? props.issue.category : "front end",
-      dueDate: props.issue ? new Date(props.issue.dueDate[0]) : new Date(),
-      assignee: props.issue ? props.issue.assignee : "",
-      status: props.issue ? props.issue.status : "open",
-      comments: props.issue ? props.issue.comments : [""]
+      issueID: editIssue ? editIssue.issueID : uniqueID(),
+      uid: editIssue ? editIssue.uid : currentUser.uid,
+      author: editIssue ? editIssue.author : currentUser.displayName,
+      subject: editIssue ? editIssue.subject : "",
+      description: editIssue ? editIssue.description : "",
+      issueType: editIssue ? editIssue.issueType : "bug",
+      priority: editIssue ? editIssue.priority : "normal",
+      category: editIssue ? editIssue.category : "front end",
+      dueDate: editIssue ? new Date(editIssue.dueDate[0]) : new Date(),
+      assignee: editIssue ? editIssue.assignee : "",
+      status: editIssue ? editIssue.status : "open",
+      comments: editIssue ? editIssue.comments : [""]
     };
   });
 
@@ -59,7 +60,7 @@ const IssueForm = (props) => {
     );
   }
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     const currentDate = new Date();
     const currentDateFormatted = formatDate(currentDate, true);
@@ -80,7 +81,7 @@ const IssueForm = (props) => {
     } catch {
       setError("Issue not submitted");
     } finally {
-      setTimeout(() => setFetchData((prev) => prev + 1), 500);
+      // setTimeout(() => setFetchData((prev) => prev + 1), 500);
     }
   };
 
@@ -207,7 +208,7 @@ const IssueForm = (props) => {
             name="subject"
             type="text"
             id="subject"
-            maxlength="30"
+            maxLength="30"
             value={issue.subject}
             onChange={handleChange}
             required

@@ -9,7 +9,7 @@ const CommentForm = ({ issueID, comments, addComment, closeComment }) => {
   const { currentUser } = useAuth();
   const [error, setError] = useState("");
   const [commentSubmitted, setCommentSubmitted] = useState();
-  const { setFetchData } = useIssues();
+  // const { setFetchData } = useIssues();
   const [loading, setLoading] = useState(false);
   const [issueComment, setIssueComment] = useState(() => {
     return {
@@ -59,7 +59,7 @@ const CommentForm = ({ issueID, comments, addComment, closeComment }) => {
     } finally {
       setLoading(false);
       closeComment(false);
-      setFetchData((prev) => prev + 1);
+      // setFetchData((prev) => prev + 1);
     }
   };
 
