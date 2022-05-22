@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useIssues } from "../contexts/IssuesContext";
 import { useRoles } from "../contexts/RoleContext";
@@ -12,11 +12,13 @@ const IssueForm = (props) => {
   const { currentUser } = useAuth();
   const [error, setError] = useState("");
   const [issueSubmitted, setIssueSubmitted] = useState();
-  // const { setFetchData } = useIssues();
+  const { issues, setIssues } = useIssues();
   const { getDevelopers } = useRoles();
   const developers = getDevelopers();
-  console.log("issue form", props.issue)
-  const editIssue = props.issue;
+  const editIssue = props.issue
+    ? issues.find((iss) => iss.issueID === props.issue.issueID)
+    : null;
+
   let navigate = useNavigate();
   const [issue, setIssue] = useState(() => {
     return {
@@ -28,10 +30,11 @@ const IssueForm = (props) => {
       issueType: editIssue ? editIssue.issueType : "bug",
       priority: editIssue ? editIssue.priority : "normal",
       category: editIssue ? editIssue.category : "front end",
+      dateCreated: editIssue ? editIssue.dateCreated : new Date(),
       dueDate: editIssue ? new Date(editIssue.dueDate[0]) : new Date(),
       assignee: editIssue ? editIssue.assignee : "",
       status: editIssue ? editIssue.status : "open",
-      comments: editIssue ? editIssue.comments : [""]
+      comments: editIssue?.comments ? editIssue.comments : []
     };
   });
 
@@ -65,67 +68,86 @@ const IssueForm = (props) => {
     const currentDate = new Date();
     const currentDateFormatted = formatDate(currentDate, true);
     const dueDateFormatted = formatDate(issue.dueDate);
+    const formattedIssue = formatIssue(
+      currentDate,
+      currentDateFormatted,
+      issue.dueDate,
+      dueDateFormatted
+    );
 
     try {
       setError("");
       setIssueSubmitted(true);
-      uploadIssue(
-        issue.issueID,
-        currentDate,
-        currentDateFormatted,
-        issue.dueDate,
-        dueDateFormatted
-      );
+
+      uploadIssue(issue.issueID, formattedIssue);
+      setIssues((prevIssues) => {
+        if (
+          prevIssues.some((prevIssue) => prevIssue.issueID === issue.issueID)
+        ) {
+          const newIssues = prevIssues.map((prevIssue) => {
+            return prevIssue.issueID === issue.issueID
+              ? formattedIssue
+              : prevIssue;
+          });
+          return newIssues;
+        } else {
+          return [formattedIssue, ...prevIssues];
+        }
+      });
 
       navigate("/issues");
     } catch {
       setError("Issue not submitted");
-    } finally {
-      // setTimeout(() => setFetchData((prev) => prev + 1), 500);
     }
   };
 
-  const uploadIssue = async (
-    issueID,
+  const formatIssue = (
     currentDate,
     currentDateFormatted,
     dueDate,
     dueDateFormatted
   ) => {
     if (props.issue) {
-      await db
-        .collection("issues")
-        .doc(issueID)
-        .update({
-          updatedBy: currentUser.displayName,
-          subject: issue.subject,
-          description: issue.description,
-          issueType: issue.issueType,
-          priority: issue.priority,
-          category: issue.category,
-          dateUpdated: [currentDate.getTime(), currentDateFormatted],
-          dueDate: [dueDate.getTime(), dueDateFormatted],
-          assignee: issue.assignee,
-          status: issue.status ? issue.status : "open"
-        });
+      return {
+        issueID: issue.issueID,
+        uid: issue.uid,
+        updatedBy: currentUser.displayName,
+        author: issue.author,
+        subject: issue.subject,
+        description: issue.description,
+        issueType: issue.issueType,
+        priority: issue.priority,
+        category: issue.category,
+        dateCreated: issue.dateCreated,
+        dateUpdated: [currentDate.getTime(), currentDateFormatted],
+        dueDate: [dueDate.getTime(), dueDateFormatted],
+        assignee: issue.assignee,
+        status: issue.status ? issue.status : "open",
+        comments: issue.comments
+      };
     } else {
-      await db
-        .collection("issues")
-        .doc(issueID)
-        .set({
-          issueID: issue.issueID,
-          uid: currentUser.uid,
-          author: currentUser.displayName,
-          subject: issue.subject,
-          description: issue.description,
-          issueType: issue.issueType,
-          priority: issue.priority,
-          category: issue.category,
-          dateCreated: [currentDate.getTime(), currentDateFormatted],
-          dueDate: [dueDate.getTime(), dueDateFormatted],
-          assignee: issue.assignee,
-          status: issue.status ? issue.status : "open"
-        });
+      return {
+        issueID: issue.issueID,
+        uid: currentUser.uid,
+        author: currentUser.displayName,
+        subject: issue.subject,
+        description: issue.description,
+        issueType: issue.issueType,
+        priority: issue.priority,
+        category: issue.category,
+        dateCreated: [currentDate.getTime(), currentDateFormatted],
+        dueDate: [dueDate.getTime(), dueDateFormatted],
+        assignee: issue.assignee,
+        status: issue.status ? issue.status : "open"
+      };
+    }
+  };
+
+  const uploadIssue = async (issueID, formattedIssue) => {
+    if (props.issue) {
+      await db.collection("issues").doc(issueID).update(formattedIssue);
+    } else {
+      await db.collection("issues").doc(issueID).set(formattedIssue);
     }
   };
 

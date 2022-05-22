@@ -41,7 +41,7 @@ const Issue = ({
   const [popup, setPopup] = useState(false);
   const [makeComment, setMakeComment] = useState(false);
   //const [commentsArray, setCommentsArray] = useState([...comments]);
-
+  console.log("ISSUEDISPLAY: ", dateCreated, dateUpdated, dueDate);
   const modifyDeletePrivilege =
     currentUser.uid === uid || isAdmin(currentUser.uid);
   const modifyPrivilege = assignee === currentUser.displayName;
@@ -63,10 +63,10 @@ const Issue = ({
       .get()
       .then((querySnapshot) => {
         querySnapshot.docs[0].ref.delete();
-      })
-      .then(() => {
-        setTimeout(() => setFetchData((prev) => prev + 1), 500);
       });
+    // .then(() => {
+    //   setTimeout(() => setFetchData((prev) => prev + 1), 500);
+    // });
 
     setDisplayIssue(null);
   };
@@ -83,24 +83,7 @@ const Issue = ({
 
       {modifyDeletePrivilege || modifyPrivilege ? (
         <div style={{ margin: "0 0 1rem 0" }}>
-          <Link
-            className="navlink-edit"
-            to="/edit-issue"
-            state={{
-              issueID,
-              uid,
-              author,
-              subject,
-              description,
-              issueType,
-              priority,
-              category,
-              dateCreated,
-              dueDate,
-              assignee,
-              status
-            }}
-          >
+          <Link className="navlink-edit" to="/edit-issue" state={{ issueID }}>
             <Button
               variant="warning"
               id="edit-button"

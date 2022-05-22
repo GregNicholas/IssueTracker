@@ -6,7 +6,7 @@ import Issue from "./Issue";
 const Issues = () => {
   const { displayIssue, setDisplayIssue, issues } = useIssues();
   const [comments, setComments] = useState(null);
-
+  console.log("IN ISSUES: ", issues);
   const columns = React.useMemo(
     () => [
       {

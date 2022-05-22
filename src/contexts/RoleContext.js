@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import IssuesContext from "../contexts/IssuesContext";
+// import IssuesContext from "../contexts/IssuesContext";
 import { useAuth } from "../contexts/AuthContext";
 import { db } from "../firebase";
 
@@ -12,7 +12,7 @@ export function useRoles() {
 export function RoleContextProvider({ children }) {
   const [userRoles, setUserRoles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState();
+  // const [isLoggedIn, setIsLoggedIn] = useState();
   const { currentUser } = useAuth();
 
   useEffect(() => {
