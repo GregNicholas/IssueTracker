@@ -178,7 +178,7 @@ const IssueForm = (props) => {
 
   const assigneeOptions = developers.map((d) => {
     return (
-      <option key={d.name} value={d.name}>
+      <option key={d.name} value={d.name} selected={issue.assignee === d.name}>
         {d.name}
       </option>
     );
@@ -190,6 +190,9 @@ const IssueForm = (props) => {
         Assignee
       </label>
       <select name="assignee" onChange={handleChange}>
+        <option key={"default"} value={""}>
+          
+        </option>
         {assigneeOptions}
       </select>
     </div>
