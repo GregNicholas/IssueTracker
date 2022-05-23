@@ -26,11 +26,32 @@ function IssuesContextProvider({ children }) {
       );
       setIssues(issuesData);
     };
-    console.log("fetching data");
+
     if (currentUser) {
       fetchData();
     }
   }, [currentUser]);
+
+  const updateIssues = (newIssue) => {
+    setIssues((prevIssues) => {
+      if (
+        prevIssues.some((prevIssue) => prevIssue.issueID === newIssue.issueID)
+      ) {
+        const newIssues = prevIssues.map((prevIssue) => {
+          return prevIssue.issueID === newIssue.issueID ? newIssue : prevIssue;
+        });
+        return newIssues;
+      } else {
+        return [newIssue, ...prevIssues];
+      }
+    });
+  };
+
+  const removeIssue = (id) => {
+    setIssues((prevIssues) => {
+      return prevIssues.filter((i) => i.issueID !== id);
+    });
+  };
 
   return (
     <IssuesContext.Provider
@@ -38,7 +59,9 @@ function IssuesContextProvider({ children }) {
         displayIssue,
         setDisplayIssue,
         issues,
-        setIssues
+        setIssues,
+        updateIssues,
+        removeIssue
       }}
     >
       {children}

@@ -12,13 +12,12 @@ const IssueForm = (props) => {
   const { currentUser } = useAuth();
   const [error, setError] = useState("");
   const [issueSubmitted, setIssueSubmitted] = useState();
-  const { issues, setIssues } = useIssues();
+  const { issues, updateIssues } = useIssues();
   const { getDevelopers } = useRoles();
   const developers = getDevelopers();
   const editIssue = props.issue
     ? issues.find((iss) => iss.issueID === props.issue.issueID)
     : null;
-
   let navigate = useNavigate();
   const [issue, setIssue] = useState(() => {
     return {
@@ -80,20 +79,7 @@ const IssueForm = (props) => {
       setIssueSubmitted(true);
 
       uploadIssue(issue.issueID, formattedIssue);
-      setIssues((prevIssues) => {
-        if (
-          prevIssues.some((prevIssue) => prevIssue.issueID === issue.issueID)
-        ) {
-          const newIssues = prevIssues.map((prevIssue) => {
-            return prevIssue.issueID === issue.issueID
-              ? formattedIssue
-              : prevIssue;
-          });
-          return newIssues;
-        } else {
-          return [formattedIssue, ...prevIssues];
-        }
-      });
+      updateIssues(formattedIssue);
 
       navigate("/issues");
     } catch {
@@ -190,9 +176,7 @@ const IssueForm = (props) => {
         Assignee
       </label>
       <select name="assignee" onChange={handleChange}>
-        <option key={"default"} value={""}>
-          
-        </option>
+        <option key={"default"} value={""}></option>
         {assigneeOptions}
       </select>
     </div>

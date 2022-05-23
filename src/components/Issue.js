@@ -40,12 +40,10 @@ const Issue = ({
   const [loading, setLoading] = useState(false);
   const [popup, setPopup] = useState(false);
   const [makeComment, setMakeComment] = useState(false);
-  //const [commentsArray, setCommentsArray] = useState([...comments]);
-  console.log("ISSUEDISPLAY: ", dateCreated, dateUpdated, dueDate);
+  const { removeIssue } = useIssues();
   const modifyDeletePrivilege =
     currentUser.uid === uid || isAdmin(currentUser.uid);
   const modifyPrivilege = assignee === currentUser.displayName;
-  const { setFetchData } = useIssues();
 
   const handleDelete = () => {
     try {
@@ -64,10 +62,7 @@ const Issue = ({
       .then((querySnapshot) => {
         querySnapshot.docs[0].ref.delete();
       });
-    // .then(() => {
-    //   setTimeout(() => setFetchData((prev) => prev + 1), 500);
-    // });
-
+    removeIssue(issueID);
     setDisplayIssue(null);
   };
 
@@ -175,7 +170,6 @@ const Issue = ({
             issueID={issueID}
             uid={uid}
             comments={comments}
-            //updateCommentDisplay={updateCommentDisplay}
             updateComments={updateComments}
           />
         </div>
