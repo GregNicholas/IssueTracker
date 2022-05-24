@@ -14,6 +14,7 @@ import { db } from "../firebase";
 import "firebase/compat/firestore";
 
 const Issue = ({
+  id,
   issueID,
   uid,
   author,
@@ -29,8 +30,6 @@ const Issue = ({
   comments,
   handleClick,
   setDisplayIssue,
-  addComment,
-  updateComments,
   updatedBy,
   dateUpdated
 }) => {
@@ -40,7 +39,12 @@ const Issue = ({
   const [loading, setLoading] = useState(false);
   const [popup, setPopup] = useState(false);
   const [makeComment, setMakeComment] = useState(false);
-  const { removeIssue } = useIssues();
+  const { issues, removeIssue, refreshComments, showNewComment } = useIssues();
+  const [displayComments, setDisplayComments] = useState(
+    issues.find((issue) => {
+      return issue.issueID === issueID;
+    }).comments
+  );
   const modifyDeletePrivilege =
     currentUser.uid === uid || isAdmin(currentUser.uid);
   const modifyPrivilege = assignee === currentUser.displayName;
@@ -64,6 +68,18 @@ const Issue = ({
       });
     removeIssue(issueID);
     setDisplayIssue(null);
+  };
+
+  const deleteComment = async (commentID) => {
+    const issue = db.collection("issues").doc(issueID);
+    const updatedComments = displayComments.filter(
+      (c) => c.commentID !== commentID
+    );
+    await issue.update({
+      comments: [...updatedComments]
+    });
+    refreshComments(issueID, updatedComments);
+    setDisplayComments(updatedComments);
   };
 
   return (
@@ -169,8 +185,8 @@ const Issue = ({
           <CommentDisplay
             issueID={issueID}
             uid={uid}
-            comments={comments}
-            updateComments={updateComments}
+            displayComments={displayComments}
+            deleteComment={deleteComment}
           />
         </div>
 
@@ -186,7 +202,7 @@ const Issue = ({
           <CommentForm
             issueID={issueID}
             comments={comments}
-            addComment={addComment}
+            setDisplayComments={setDisplayComments}
             closeComment={setMakeComment}
           />
         ) : null}

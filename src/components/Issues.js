@@ -1,11 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useIssues } from "../contexts/IssuesContext";
 import IssueTable from "./IssueTable";
 import Issue from "./Issue";
 
 const Issues = () => {
-  const { displayIssue, setDisplayIssue, issues } = useIssues();
-  const [comments, setComments] = useState(null);
+  const {
+    displayIssue,
+    setDisplayIssue,
+    issues,
+    refreshComments
+  } = useIssues();
+  // const [comments, setComments] = useState(null);
+  console.log("ISSUES COMPONENT", issues);
   const columns = React.useMemo(
     () => [
       {
@@ -36,7 +42,7 @@ const Issues = () => {
 
   const data = React.useMemo(
     () =>
-      issues.map((issue) => {
+      issues?.map((issue) => {
         return {
           col0: issue.assignee,
           col1: issue.subject,
@@ -52,40 +58,42 @@ const Issues = () => {
 
   const handleClick = (e) => {
     if (displayIssue === null) {
-      const issue = issues.filter((i) => i.issueID === e.target.id);
-      const foundComments = issue[0].comments;
-      if (foundComments) setComments(foundComments);
+      const issue = issues.filter((i) => i.issueID === e.target.id)[0];
+      // const foundComments = issue.comments;
+      // if (foundComments) setComments(foundComments);
 
       setDisplayIssue(issue);
     } else {
-      setComments(null);
+      // setComments(null);
       setDisplayIssue(null);
     }
   };
 
-  const addComment = (c) => {
-    comments ? setComments([...comments, c]) : setComments([c]);
-  };
+  // const addComment = (c) => {
+  //   // comments ? setComments([...comments, c]) : setComments([c]);
+  // };
 
-  const updateComments = (updatedComments) => {
-    // edit this next
-    setComments([...updatedComments]);
-  };
+  // const updateComments = (issueID, updatedComments) => {
+  //   refreshComments(issueID, updatedComments);
+  //   // setComments([...updatedComments]);
+  // };
 
+  console.log("IN ISSUES DISPLAYISSUE comments: ", displayIssue?.comments);
   return (
     <div className="centered-container">
       <h2 className="page-title">Issues</h2>
       {displayIssue ? (
         <Issue
-          {...displayIssue[0]}
-          comments={comments}
-          addComment={addComment}
-          updateComments={updateComments}
+          {...displayIssue}
+          id={displayIssue.issueID}
+          // //comments={comments}
+          // addComment={addComment}
+          // updateComments={updateComments}
           setDisplayIssue={setDisplayIssue}
           handleClick={handleClick}
           className="issue"
         />
-      ) : issues.length > 0 ? (
+      ) : issues?.length > 0 ? (
         <>
           <IssueTable columns={columns} data={data} handleClick={handleClick} />
         </>

@@ -53,6 +53,51 @@ function IssuesContextProvider({ children }) {
     });
   };
 
+  const showNewComment = (issueID, comment) => {
+    console.log("SHOWNEWCOMMENT:", comment);
+    setIssues((prevIssues) => {
+      return prevIssues.map((issue) => {
+        if (issue.issueID === issueID) {
+          const updatedComments = {};
+          updatedComments.comments = [...issue.comments, comment];
+          console.log("UPDATEDISSUE in comments: ", updatedComments);
+          return { ...issue, ...updatedComments };
+        } else {
+          return issue;
+        }
+      });
+    });
+  };
+
+  // const removeComment = (issueID, commentID) => {
+  //   setIssues((prevIssues) => {
+  //     return prevIssues.map((issue) => {
+  //       if (issue.issueID === issueID) {
+  //         const updatedComments = issue.comments.filter((comment) => {
+  //           return comment.commentID !== commentID;
+  //         });
+  //         return { ...issue, ...updatedComments };
+  //       } else {
+  //         return issue;
+  //       }
+  //     });
+  //   });
+  // };
+
+  const refreshComments = (issueID, updatedComments) => {
+    setIssues((prevIssues) => {
+      const newIssues = prevIssues.map((issue) => {
+        if (issue.issueID === issueID) {
+          console.log(issue.issueID, issueID);
+          return { ...issue, comments: updatedComments };
+        } else {
+          return issue;
+        }
+      });
+      return newIssues;
+    });
+  };
+
   return (
     <IssuesContext.Provider
       value={{
@@ -61,7 +106,10 @@ function IssuesContextProvider({ children }) {
         issues,
         setIssues,
         updateIssues,
-        removeIssue
+        removeIssue,
+        showNewComment,
+        // removeComment,
+        refreshComments
       }}
     >
       {children}

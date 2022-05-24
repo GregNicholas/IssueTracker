@@ -119,6 +119,7 @@ const IssueTable = ({ columns, data, handleClick }) => {
                 {row.cells.map((cell) => {
                   return (
                     <td
+                      className="table-items"
                       {...cell.getCellProps()}
                       style={{
                         cursor: "pointer",

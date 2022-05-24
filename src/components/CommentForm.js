@@ -3,13 +3,17 @@ import { useAuth } from "../contexts/AuthContext";
 import { useIssues } from "../contexts/IssuesContext";
 import { Button, Alert } from "react-bootstrap";
 import { db } from "../firebase";
-//import { useHistory } from "react-router-dom";
 
-const CommentForm = ({ issueID, comments, addComment, closeComment }) => {
+const CommentForm = ({
+  issueID,
+  comments,
+  setDisplayComments,
+  closeComment
+}) => {
   const { currentUser } = useAuth();
   const [error, setError] = useState("");
   const [commentSubmitted, setCommentSubmitted] = useState();
-  // const { setFetchData } = useIssues();
+  const { showNewComment } = useIssues();
   const [loading, setLoading] = useState(false);
   const [issueComment, setIssueComment] = useState(() => {
     return {
@@ -20,6 +24,11 @@ const CommentForm = ({ issueID, comments, addComment, closeComment }) => {
       commentID: uniqueID()
     };
   });
+
+  // const updateComments = (issueID, updatedComments) => {
+  //   refreshComments(issueID, updatedComments);
+  //   setComments([...updatedComments]);
+  // };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,7 +55,7 @@ const CommentForm = ({ issueID, comments, addComment, closeComment }) => {
     );
   }
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     try {
@@ -59,13 +68,11 @@ const CommentForm = ({ issueID, comments, addComment, closeComment }) => {
     } finally {
       setLoading(false);
       closeComment(false);
-      // setFetchData((prev) => prev + 1);
     }
   };
 
   const uploadComment = async () => {
-    const issue = await db.collection("issues").doc(issueID);
-    //const commentName = `comment${issueComment.commentID}`
+    const issue = db.collection("issues").doc(issueID);
     let commentDate = new Date().toString();
     commentDate = commentDate.slice(4, commentDate.indexOf(" GMT") - 3);
     const comment = {
@@ -86,7 +93,8 @@ const CommentForm = ({ issueID, comments, addComment, closeComment }) => {
       });
     }
 
-    addComment(comment);
+    setDisplayComments([...comments, comment]);
+    showNewComment(issueID, comment);
   };
 
   return (

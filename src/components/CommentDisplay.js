@@ -4,14 +4,12 @@ import { useAuth } from "../contexts/AuthContext";
 import { useIssues } from "../contexts/IssuesContext";
 
 import { db } from "../firebase";
-// import { doc, updateDoc, deleteField } from "firebase/firestore";
-// import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
 
-const CommentDisplay = ({ issueID, uid, comments, updateComments }) => {
+const CommentDisplay = ({ issueID, uid, displayComments, deleteComment }) => {
   const [error, setError] = useState("");
   const { currentUser } = useAuth();
-  const { setFetchData } = useIssues();
+  const { refreshComments } = useIssues();
 
   const handleDeleteComment = (commentID) => {
     try {
@@ -19,24 +17,11 @@ const CommentDisplay = ({ issueID, uid, comments, updateComments }) => {
       return true;
     } catch {
       setError("Comment not deleted");
-    } finally {
-      setFetchData((prev) => prev + 1);
     }
   };
 
-  const deleteComment = async (commentID) => {
-    const issue = db.collection("issues").doc(issueID);
-    const updatedComments = comments.filter((c) => c.commentID !== commentID);
-    const res = await issue.update({
-      comments: [...updatedComments]
-    });
-    console.log("res: ", res);
-    updateComments(updatedComments);
-    console.log(updatedComments);
-  };
-
-  const allComments = comments
-    ? comments.map((comment) => {
+  const allComments = displayComments
+    ? displayComments.map((comment) => {
         return (
           <div className="comment-card" key={comment.commentID}>
             <p
