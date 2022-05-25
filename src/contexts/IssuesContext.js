@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, createContext, useContext } from "react";
 import { useAuth } from "./AuthContext";
 import { db } from "../firebase";
 
-const IssuesContext = React.createContext();
+const IssuesContext = createContext([]);
 
 function useIssues() {
   return useContext(IssuesContext);
@@ -24,6 +24,7 @@ function IssuesContextProvider({ children }) {
           ? -1
           : 0
       );
+      console.log("ISSUES DATA: ", issuesData);
       setIssues(issuesData);
     };
 

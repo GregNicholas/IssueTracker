@@ -124,7 +124,8 @@ const IssueForm = (props) => {
         dateCreated: [currentDate.getTime(), currentDateFormatted],
         dueDate: [dueDate.getTime(), dueDateFormatted],
         assignee: issue.assignee,
-        status: issue.status ? issue.status : "open"
+        status: issue.status ? issue.status : "open",
+        comments: issue.comments
       };
     }
   };

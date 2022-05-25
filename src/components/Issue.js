@@ -43,7 +43,7 @@ const Issue = ({
   const [displayComments, setDisplayComments] = useState(
     issues.find((issue) => {
       return issue.issueID === issueID;
-    }).comments
+    })?.comments
   );
   const modifyDeletePrivilege =
     currentUser.uid === uid || isAdmin(currentUser.uid);
