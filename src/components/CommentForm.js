@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useIssues } from "../contexts/IssuesContext";
 import { Button, Alert } from "react-bootstrap";
@@ -6,14 +6,14 @@ import { db } from "../firebase";
 
 const CommentForm = ({
   issueID,
-  comments,
+  displayComments,
   setDisplayComments,
   closeComment
 }) => {
   const { currentUser } = useAuth();
   const [error, setError] = useState("");
   const [commentSubmitted, setCommentSubmitted] = useState();
-  const { showNewComment } = useIssues();
+  const { refreshComments } = useIssues();
   const [loading, setLoading] = useState(false);
   const [issueComment, setIssueComment] = useState(() => {
     return {
@@ -24,11 +24,6 @@ const CommentForm = ({
       commentID: uniqueID()
     };
   });
-
-  // const updateComments = (issueID, updatedComments) => {
-  //   refreshComments(issueID, updatedComments);
-  //   setComments([...updatedComments]);
-  // };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -83,18 +78,11 @@ const CommentForm = ({
       date: commentDate
     };
 
-    if (comments) {
-      const res = await issue.update({
-        comments: [...comments, comment]
-      });
-    } else {
-      const res = await issue.update({
-        comments: [comment]
-      });
-    }
-
-    setDisplayComments([...comments, comment]);
-    showNewComment(issueID, comment);
+    await issue.update({
+      comments: [...displayComments, comment]
+    });
+    refreshComments(issueID, [...displayComments, comment]);
+    setDisplayComments((prevComments) => [...prevComments, comment]);
   };
 
   return (

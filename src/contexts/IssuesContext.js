@@ -1,8 +1,18 @@
-import React, { useState, useEffect, createContext, useContext } from "react";
+import React, {
+  useState,
+  useEffect,
+  createContext,
+  useContext,
+  useReducer
+} from "react";
+import issuesReducer from "./reducers/issuesReducer";
 import { useAuth } from "./AuthContext";
 import { db } from "../firebase";
 
-const IssuesContext = createContext([]);
+const initialState = {
+  issues: []
+};
+const IssuesContext = createContext(initialState);
 
 function useIssues() {
   return useContext(IssuesContext);
@@ -12,90 +22,77 @@ function IssuesContextProvider({ children }) {
   const { currentUser } = useAuth();
   const [displayIssue, setDisplayIssue] = useState(null);
   const [issues, setIssues] = useState([]);
+  const [state, dispatch] = useReducer(issuesReducer, initialState);
+
+  const fetchData = async () => {
+    let issuesData = await db.collection("issues").get();
+    issuesData = issuesData.docs.map((doc) => doc.data());
+    issuesData.sort((a, b) =>
+      a.dateCreated[0] < b.dateCreated[0]
+        ? 1
+        : b.dateCreated[0] < a.dateCreated[0]
+        ? -1
+        : 0
+    );
+    dispatch({
+      type: "UPDATE_ISSUES",
+      payload: {
+        issues: issuesData
+      }
+    });
+    setIssues(issuesData);
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      let issuesData = await db.collection("issues").get();
-      issuesData = issuesData.docs.map((doc) => doc.data());
-      issuesData.sort((a, b) =>
-        a.dateCreated[0] < b.dateCreated[0]
-          ? 1
-          : b.dateCreated[0] < a.dateCreated[0]
-          ? -1
-          : 0
-      );
-      console.log("ISSUES DATA: ", issuesData);
-      setIssues(issuesData);
-    };
-
     if (currentUser) {
       fetchData();
     }
   }, [currentUser]);
 
-  const updateIssues = (newIssue) => {
-    setIssues((prevIssues) => {
-      if (
-        prevIssues.some((prevIssue) => prevIssue.issueID === newIssue.issueID)
-      ) {
-        const newIssues = prevIssues.map((prevIssue) => {
-          return prevIssue.issueID === newIssue.issueID ? newIssue : prevIssue;
-        });
-        return newIssues;
-      } else {
-        return [newIssue, ...prevIssues];
+  const addIssue = (newIssue, isEditing) => {
+    let updatedIssues;
+    if (isEditing) {
+      updatedIssues = state.issues.map((issue) => {
+        if (issue.issueID !== newIssue.issueID) {
+          return issue;
+        } else {
+          return newIssue;
+        }
+      });
+    } else {
+      updatedIssues = [newIssue, ...state.issues];
+    }
+    dispatch({
+      type: "UPDATE_ISSUES",
+      payload: {
+        issues: updatedIssues
       }
     });
   };
 
   const removeIssue = (id) => {
-    setIssues((prevIssues) => {
-      return prevIssues.filter((i) => i.issueID !== id);
+    const updatedIssues = state.issues.filter((i) => i.issueID !== id);
+    dispatch({
+      type: "UPDATE_ISSUES",
+      payload: {
+        issues: updatedIssues
+      }
     });
   };
-
-  const showNewComment = (issueID, comment) => {
-    console.log("SHOWNEWCOMMENT:", comment);
-    setIssues((prevIssues) => {
-      return prevIssues.map((issue) => {
-        if (issue.issueID === issueID) {
-          const updatedComments = {};
-          updatedComments.comments = [...issue.comments, comment];
-          console.log("UPDATEDISSUE in comments: ", updatedComments);
-          return { ...issue, ...updatedComments };
-        } else {
-          return issue;
-        }
-      });
-    });
-  };
-
-  // const removeComment = (issueID, commentID) => {
-  //   setIssues((prevIssues) => {
-  //     return prevIssues.map((issue) => {
-  //       if (issue.issueID === issueID) {
-  //         const updatedComments = issue.comments.filter((comment) => {
-  //           return comment.commentID !== commentID;
-  //         });
-  //         return { ...issue, ...updatedComments };
-  //       } else {
-  //         return issue;
-  //       }
-  //     });
-  //   });
-  // };
 
   const refreshComments = (issueID, updatedComments) => {
-    setIssues((prevIssues) => {
-      const newIssues = prevIssues.map((issue) => {
-        if (issue.issueID === issueID) {
-          console.log(issue.issueID, issueID);
-          return { ...issue, comments: updatedComments };
-        } else {
-          return issue;
-        }
-      });
-      return newIssues;
+    const updatedIssues = state.issues.map((issue) => {
+      if (issue.issueID !== issueID) {
+        return issue;
+      } else {
+        return { ...issue, comments: [...updatedComments] };
+      }
+    });
+    dispatch({
+      type: "UPDATE_ISSUES",
+      payload: {
+        issues: updatedIssues
+      }
     });
   };
 
@@ -106,11 +103,10 @@ function IssuesContextProvider({ children }) {
         setDisplayIssue,
         issues,
         setIssues,
-        updateIssues,
+        addIssue,
         removeIssue,
-        showNewComment,
-        // removeComment,
-        refreshComments
+        refreshComments,
+        rIssues: state.issues
       }}
     >
       {children}

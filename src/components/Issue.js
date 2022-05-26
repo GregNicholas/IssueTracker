@@ -13,45 +13,24 @@ import { db } from "../firebase";
 
 import "firebase/compat/firestore";
 
-const Issue = ({
-  id,
-  issueID,
-  uid,
-  author,
-  subject,
-  description,
-  issueType,
-  priority,
-  category,
-  dateCreated,
-  dueDate,
-  assignee,
-  status,
-  comments,
-  handleClick,
-  setDisplayIssue,
-  updatedBy,
-  dateUpdated
-}) => {
+const Issue = ({ id, handleClick, setDisplayIssue }) => {
   const { currentUser } = useAuth();
   const { isAdmin } = useRoles();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [popup, setPopup] = useState(false);
   const [makeComment, setMakeComment] = useState(false);
-  const { issues, removeIssue, refreshComments, showNewComment } = useIssues();
-  const [displayComments, setDisplayComments] = useState(
-    issues.find((issue) => {
-      return issue.issueID === issueID;
-    })?.comments
-  );
+  const { rIssues, removeIssue } = useIssues();
+  const issue = rIssues?.find((el) => el.issueID === id);
+  const [displayComments, setDisplayComments] = useState(issue?.comments);
+
   const modifyDeletePrivilege =
-    currentUser.uid === uid || isAdmin(currentUser.uid);
-  const modifyPrivilege = assignee === currentUser.displayName;
+    currentUser.uid === issue?.uid || isAdmin(currentUser.uid);
+  const modifyPrivilege = issue?.assignee === currentUser.displayName;
 
   const handleDelete = () => {
     try {
-      deleteIssue(issueID);
+      deleteIssue(id);
     } catch {
       setError("Issue not submitted");
     }
@@ -66,24 +45,12 @@ const Issue = ({
       .then((querySnapshot) => {
         querySnapshot.docs[0].ref.delete();
       });
-    removeIssue(issueID);
+    removeIssue(id);
     setDisplayIssue(null);
   };
 
-  const deleteComment = async (commentID) => {
-    const issue = db.collection("issues").doc(issueID);
-    const updatedComments = displayComments.filter(
-      (c) => c.commentID !== commentID
-    );
-    await issue.update({
-      comments: [...updatedComments]
-    });
-    refreshComments(issueID, updatedComments);
-    setDisplayComments(updatedComments);
-  };
-
   return (
-    <div key={issueID} className="issue-card">
+    <div key={id} className="issue-card">
       <Button
         style={{ position: "relative", float: "right" }}
         variant="secondary"
@@ -94,7 +61,7 @@ const Issue = ({
 
       {modifyDeletePrivilege || modifyPrivilege ? (
         <div style={{ margin: "0 0 1rem 0" }}>
-          <Link className="navlink-edit" to="/edit-issue" state={{ issueID }}>
+          <Link className="navlink-edit" to="/edit-issue" state={{ id }}>
             <Button
               variant="warning"
               id="edit-button"
@@ -118,19 +85,21 @@ const Issue = ({
       ) : null}
 
       <div className="card-head">
-        <h2 className="header-title">{subject}</h2>
+        <h2 className="header-title">{issue?.subject}</h2>
         <div className="header-row">
           <div className="header-column">
-            <p className="header-element">Created: {dateCreated[1]}</p>
-            <p className="header-element">-{author}</p>
-            <p className="header-element">Assigned to: {assignee}</p>
+            <p className="header-element">Created: {issue?.dateCreated[1]}</p>
+            <p className="header-element">-{issue?.author}</p>
+            <p className="header-element">Assigned to: {issue?.assignee}</p>
           </div>
           <div className="header-column header-column2">
-            {dateUpdated && (
-              <p className="header-element">Updated: {dateUpdated[1]}</p>
+            {issue?.dateUpdated && (
+              <p className="header-element">Updated: {issue?.dateUpdated[1]}</p>
             )}
-            {updatedBy && <p className="header-element">-{updatedBy}</p>}
-            <p className="header-element">Due: {dueDate[1]}</p>
+            {issue?.updatedBy && (
+              <p className="header-element">-{issue?.updatedBy}</p>
+            )}
+            <p className="header-element">Due: {issue?.dueDate[1]}</p>
           </div>
         </div>
       </div>
@@ -147,7 +116,7 @@ const Issue = ({
               >
                 Description{" "}
               </span>
-              <span className="issue-element-value">{description}</span>
+              <span className="issue-element-value">{issue?.description}</span>
             </div>
           </div>
         </div>
@@ -156,13 +125,13 @@ const Issue = ({
           <div className="issue-column">
             <div className="issue-element">
               <span className="issue-element-title">Type </span>
-              <span className="issue-element-value">{issueType}</span>
+              <span className="issue-element-value">{issue?.issueType}</span>
             </div>
           </div>
           <div className="issue-column">
             <div className="issue-element">
               <span className="issue-element-title">Category </span>
-              <span className="issue-element-value">{category}</span>
+              <span className="issue-element-value">{issue?.category}</span>
             </div>
           </div>
         </div>
@@ -170,23 +139,23 @@ const Issue = ({
           <div className="issue-column">
             <div className="issue-element">
               <span className="issue-element-title">Status </span>
-              {status}
+              {issue?.status}
             </div>
           </div>
           <div className="issue-column">
             <div className="issue-element">
               <span className="issue-element-title">Priority </span>
-              {priority}
+              {issue?.priority}
             </div>
           </div>
         </div>
 
         <div className="comment-list double-issue-section">
           <CommentDisplay
-            issueID={issueID}
-            uid={uid}
+            issueID={id}
+            uid={issue?.uid}
             displayComments={displayComments}
-            deleteComment={deleteComment}
+            setDisplayComments={setDisplayComments}
           />
         </div>
 
@@ -200,8 +169,9 @@ const Issue = ({
 
         {makeComment ? (
           <CommentForm
-            issueID={issueID}
-            comments={comments}
+            issueID={id}
+            comments={issue?.comments}
+            displayComments={displayComments}
             setDisplayComments={setDisplayComments}
             closeComment={setMakeComment}
           />

@@ -4,14 +4,7 @@ import IssueTable from "./IssueTable";
 import Issue from "./Issue";
 
 const Issues = () => {
-  const {
-    displayIssue,
-    setDisplayIssue,
-    issues,
-    refreshComments
-  } = useIssues();
-  // const [comments, setComments] = useState(null);
-  console.log("ISSUES COMPONENT", issues);
+  const { displayIssue, setDisplayIssue, rIssues } = useIssues();
   const columns = React.useMemo(
     () => [
       {
@@ -42,7 +35,7 @@ const Issues = () => {
 
   const data = React.useMemo(
     () =>
-      issues?.map((issue) => {
+      rIssues?.map((issue) => {
         return {
           col0: issue.assignee,
           col1: issue.subject,
@@ -53,32 +46,19 @@ const Issues = () => {
           id: issue.issueID
         };
       }),
-    [issues]
+    [rIssues]
   );
 
   const handleClick = (e) => {
     if (displayIssue === null) {
-      const issue = issues.filter((i) => i.issueID === e.target.id)[0];
-      // const foundComments = issue.comments;
-      // if (foundComments) setComments(foundComments);
+      const issue = rIssues.filter((i) => i.issueID === e.target.id)[0];
 
       setDisplayIssue(issue);
     } else {
-      // setComments(null);
       setDisplayIssue(null);
     }
   };
 
-  // const addComment = (c) => {
-  //   // comments ? setComments([...comments, c]) : setComments([c]);
-  // };
-
-  // const updateComments = (issueID, updatedComments) => {
-  //   refreshComments(issueID, updatedComments);
-  //   // setComments([...updatedComments]);
-  // };
-
-  console.log("IN ISSUES DISPLAYISSUE comments: ", displayIssue?.comments);
   return (
     <div className="centered-container">
       <h2 className="page-title">Issues</h2>
@@ -86,14 +66,11 @@ const Issues = () => {
         <Issue
           {...displayIssue}
           id={displayIssue.issueID}
-          // //comments={comments}
-          // addComment={addComment}
-          // updateComments={updateComments}
           setDisplayIssue={setDisplayIssue}
           handleClick={handleClick}
           className="issue"
         />
-      ) : issues?.length > 0 ? (
+      ) : rIssues?.length > 0 ? (
         <>
           <IssueTable columns={columns} data={data} handleClick={handleClick} />
         </>

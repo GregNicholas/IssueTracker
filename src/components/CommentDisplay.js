@@ -6,10 +6,27 @@ import { useIssues } from "../contexts/IssuesContext";
 import { db } from "../firebase";
 import "firebase/compat/firestore";
 
-const CommentDisplay = ({ issueID, uid, displayComments, deleteComment }) => {
+const CommentDisplay = ({
+  issueID,
+  uid,
+  displayComments,
+  setDisplayComments
+}) => {
   const [error, setError] = useState("");
   const { currentUser } = useAuth();
   const { refreshComments } = useIssues();
+
+  const deleteComment = async (commentID) => {
+    const issue = db.collection("issues").doc(issueID);
+    const updatedComments = displayComments.filter(
+      (c) => c.commentID !== commentID
+    );
+    await issue.update({
+      comments: [...updatedComments]
+    });
+    refreshComments(issueID, updatedComments);
+    setDisplayComments(updatedComments);
+  };
 
   const handleDeleteComment = (commentID) => {
     try {

@@ -9,14 +9,15 @@ import { useNavigate } from "react-router-dom";
 import "react-datepicker/dist/react-datepicker.css";
 
 const IssueForm = (props) => {
+  console.log("IssueForm props: ", props)
   const { currentUser } = useAuth();
   const [error, setError] = useState("");
   const [issueSubmitted, setIssueSubmitted] = useState();
-  const { issues, updateIssues } = useIssues();
+  const { rIssues, addIssue } = useIssues();
   const { getDevelopers } = useRoles();
   const developers = getDevelopers();
   const editIssue = props.issue
-    ? issues.find((iss) => iss.issueID === props.issue.issueID)
+    ? rIssues.find((iss) => iss.issueID === props.issue.id)
     : null;
   let navigate = useNavigate();
   const [issue, setIssue] = useState(() => {
@@ -79,7 +80,8 @@ const IssueForm = (props) => {
       setIssueSubmitted(true);
 
       uploadIssue(issue.issueID, formattedIssue);
-      updateIssues(formattedIssue);
+      const isEditing = props.issue ? true : false;
+      addIssue(formattedIssue, isEditing);
 
       navigate("/issues");
     } catch {
