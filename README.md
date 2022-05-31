@@ -4,7 +4,7 @@
 
 This app is an issue tracking system, created so that an individual or members of a team can keep track of issues related to a project they are working on.
 
-**_NOTE on refactoring_** After a review of the app, I realized I had not fixed an issue with state management. When the IssuesContext was added to the app, I just used a bare bones functionality, and a very "hacky" way of updating data while I worked on firebase management and other things. I have now added the reducer and refactored IssuesContext to make the code cleaner.
+**_NOTE on refactoring_** After a review of the app, I realized I had not fixed an issue with state management. When the IssuesContext was added to the app, I had used a bare bones functionality to take advantage of the Context API, but I used a "hacky" way of updating data while I focused on making the app functional. I have now added the reducer and refactored IssuesContext to make the code cleaner.
 
 ## Requirements/Features
 
