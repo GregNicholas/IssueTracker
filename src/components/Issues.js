@@ -61,6 +61,10 @@ const Issues = () => {
 
   return (
     <div className="centered-container">
+      <div class="tooltip">
+        Hover over me
+        <span class="tooltiptext">Tooltip text</span>
+      </div>
       <h2 className="page-title">Issues</h2>
       {displayIssue ? (
         <Issue
