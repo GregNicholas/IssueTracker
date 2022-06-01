@@ -1,5 +1,9 @@
 # Issue tracking app with React and firebase
 
+### Links
+
+- Live Site URL: [Issue Tracker](https://csb-xwqjcz.vercel.app/)
+
 ## Overview
 
 This app is an issue tracking system, created so that an individual or members of a team can keep track of issues related to a project they are working on.
@@ -43,9 +47,5 @@ react-table to build the sortable table
 react-datepicker for setting due date in the form
 react-minimal-pie-chart used to show stats
 react-fontawesome icons
-
-### Links
-
-- Live Site URL: [Issue Tracker](https://csb-b1wuh3.netlify.app/)
 
 ### by Greg Schoenberg
