@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-//import { Link } from "react-scroll";
 import { useIssues } from "../contexts/IssuesContext";
 import { Link } from "react-router-dom";
 import {
   faTimes,
+  faChartPie,
   faHome,
   faClipboard,
   faPlusSquare,
@@ -33,6 +33,7 @@ export const NavComponent = ({ onClick, navClass, linkClassName }) => {
         ["Home", faHome],
         ["Issues", faClipboard],
         ["Add Issue", faPlusSquare],
+        ["Stats", faChartPie],
         ["Profile", faUser]
       ].map(([page, icon]) => (
         <Link

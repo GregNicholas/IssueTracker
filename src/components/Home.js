@@ -1,83 +1,87 @@
 import React from "react";
-import { useAuth } from "../contexts/AuthContext";
-import { useIssues } from "../contexts/IssuesContext";
-import { PieChart } from "react-minimal-pie-chart";
 import { Link } from "react-router-dom";
+import ReactTooltip from "react-tooltip";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function Home() {
-  const { issues } = useIssues();
-  const numOpen = issues.filter((item) => {
-    return item.status === "open";
-  }).length;
-  const numInProgress = issues.filter((item) => {
-    return item.status === "inProgress";
-  }).length;
-  const numClosed = issues.filter((item) => {
-    return item.status === "closed";
-  }).length;
-
-  const numBug = issues.filter((item) => {
-    return item.issueType === "bug";
-  }).length;
-  const numNewFeature = issues.filter((item) => {
-    return item.issueType === "new feature";
-  }).length;
-  const numStyle = issues.filter((item) => {
-    return item.issueType === "style";
-  }).length;
-
   return (
     <div className="centered-container">
-      <Link
-        style={{
-          textDecoration: "none"
-        }}
-        to={"/Issues"}
-        className="home-link"
-      >
-        <div>View Issues Table</div>
-      </Link>
+      <div className="page-thumbnails">
+        <div className="thumbnail issues-page-thumbnail">
+          <ReactTooltip id="issues-page">
+            <span>View table with all issues</span>
+          </ReactTooltip>
+          <Link
+            data-tip
+            data-for="issues-page"
+            style={{
+              textDecoration: "none"
+            }}
+            to={"/issues"}
+            className="home-link"
+          >
+            <img
+              src={require("../images/table-thumb.png")}
+              alt="thumbnail for issues page"
+            />
+          </Link>
+        </div>
+        <div className="thumbnail stats-page-thumbnail">
+          <ReactTooltip id="stats-page">
+            <span>View charts with issues stats</span>
+          </ReactTooltip>
+          <Link
+            data-tip
+            data-for="stats-page"
+            style={{
+              textDecoration: "none"
+            }}
+            to={"/stats"}
+            className="home-link"
+          >
+            <img
+              src={require("../images/stats-thumb.png")}
+              alt="thumbnail for stats page"
+            />
+          </Link>
+        </div>
+        <div className="thumbnail add-page-thumbnail">
+          <ReactTooltip id="add-page">
+            <span>Open form to add a new issue</span>
+          </ReactTooltip>
+          <Link
+            data-tip
+            data-for="add-page"
+            style={{
+              textDecoration: "none"
+            }}
+            to={"/add-issue"}
+            className="home-link"
+          >
+            <img
+              src={require("../images/add-thumb.png")}
+              alt="thumbnail for add-issue page"
+            />
+          </Link>
+        </div>
 
-      <div
-        style={{
-          display: "flex",
-          padding: "0 0.5rem",
-          margin: "0 auto",
-          gap: "1rem"
-        }}
-      >
-        <div className="pie-chart-card">
-          <PieChart
-            data={[
-              { title: "Open", value: numOpen, color: "#000db5" },
-              { title: "In Progress", value: numInProgress, color: "#f50060" },
-              { title: "Closed", value: numClosed, color: "#ffa600" }
-            ]}
-            label={({ dataEntry }) => dataEntry.value}
-          />
-          <h3>Status</h3>
-          <ul>
-            <li>Open</li>
-            <li>In Progress</li>
-            <li>Closed</li>
-          </ul>
-        </div>
-        <div className="pie-chart-card">
-          <PieChart
-            data={[
-              { title: "Bug", value: numBug, color: "#000db5" },
-              { title: "New Feature", value: numNewFeature, color: "#f50060" },
-              { title: "Style", value: numStyle, color: "#ffa600" }
-            ]}
-            label={({ dataEntry }) => dataEntry.value}
-          />
-          <h3>Issue Type</h3>
-          <ul>
-            <li>Bug</li>
-            <li>New Feature</li>
-            <li>Style</li>
-          </ul>
-        </div>
+        <Link
+          data-tip
+          data-for="profile-page"
+          style={{
+            textDecoration: "none"
+          }}
+          to={"/profile"}
+          className="home-link"
+        >
+          <div className="thumbnail thumbnail-icon profile-page-thumbnail">
+            <ReactTooltip id="profile-page">
+              <span>View your profile page</span>
+            </ReactTooltip>
+            <FontAwesomeIcon icon={faUser} />
+          </div>
+        </Link>
       </div>
     </div>
   );

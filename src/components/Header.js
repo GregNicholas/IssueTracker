@@ -1,6 +1,6 @@
 import React from "react";
 import FullNavbar from "./FullNavbar";
-import { Link } from "react-scroll";
+import { Link } from "react-router-dom";
 import SmallNavbar from "./SmallNavbar";
 import { useWindowWidthAndHeight } from "../customHooks/CustomHooks";
 import { faBug } from "@fortawesome/free-solid-svg-icons";
@@ -12,7 +12,7 @@ const Header = () => {
     <header>
       <div className="header-inner">
         <Link
-          to="Home"
+          to={"/home"}
           className="logo nav-link"
           style={{
             fontSize: "1.5rem",

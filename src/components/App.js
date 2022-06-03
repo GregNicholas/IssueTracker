@@ -17,9 +17,8 @@ import Home from "./Home";
 import Issues from "./Issues";
 import AddIssue from "./AddIssue";
 import EditIssue from "./EditIssue";
+import Stats from "./Stats";
 import Profile from "./Profile";
-
-// import IssuesContext from "../contexts/IssuesContext";
 
 export default function App() {
   return (
@@ -35,6 +34,7 @@ export default function App() {
             <Route path="/add-issue" element={<AddIssue />} />
             <Route path="/edit-issue" element={<EditIssue />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/stats" element={<Stats />} />
           </Route>
 
           <Route path="/signup" element={<Signup />} />
