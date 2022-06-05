@@ -22,7 +22,9 @@ export default function Home() {
             className="home-link"
           >
             <img
-              src={require("../images/table-thumb.png")}
+              src={
+                "https://res.cloudinary.com/mobyd/image/upload/v1654444100/table-thumb_pqxccj.png"
+              }
               alt="thumbnail for issues page"
             />
           </Link>
@@ -41,7 +43,9 @@ export default function Home() {
             className="home-link"
           >
             <img
-              src={require("../images/stats-thumb.png")}
+              src={
+                "https://res.cloudinary.com/mobyd/image/upload/v1654444100/stats-thumb_mibpc0.png"
+              }
               alt="thumbnail for stats page"
             />
           </Link>
@@ -60,7 +64,9 @@ export default function Home() {
             className="home-link"
           >
             <img
-              src={require("../images/add-thumb.png")}
+              src={
+                "https://res.cloudinary.com/mobyd/image/upload/v1654444100/add-thumb_grhrrb.png"
+              }
               alt="thumbnail for add-issue page"
             />
           </Link>

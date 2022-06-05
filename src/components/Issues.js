@@ -79,7 +79,7 @@ const Issues = () => {
           <IssueTable columns={columns} data={data} handleClick={handleClick} />
         </>
       ) : (
-        <p className="message">No Issues TABLE Available</p>
+        <p className="message">Waiting for data</p>
       )}
     </div>
   );
