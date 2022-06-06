@@ -7,6 +7,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 export default function Home() {
   return (
     <div className="centered-container">
+      <p>Navigate to the issues table to access the current list of issues</p>
+
       <div className="page-thumbnails">
         <div className="thumbnail issues-page-thumbnail">
           <ReactTooltip id="issues-page">

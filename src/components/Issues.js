@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useIssues } from "../contexts/IssuesContext";
 import IssueTable from "./IssueTable";
 import Issue from "./Issue";
+import ReactTooltip from "react-tooltip";
+import { faQuestion } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Issues = () => {
   const { displayIssue, setDisplayIssue, rIssues } = useIssues();
@@ -61,11 +64,27 @@ const Issues = () => {
 
   return (
     <div className="centered-container">
-      <div class="tooltip">
-        Hover over me
-        <span class="tooltiptext">Tooltip text</span>
-      </div>
       <h2 className="page-title">Issues</h2>
+      {!displayIssue && (
+        <>
+          <ReactTooltip
+            id="help"
+            place="bottom"
+            backgroundColor="black"
+            textColor="white"
+          >
+            <ul className="issue-table-instructions">
+              <li>enter text in search field to filter</li>
+              <li>click a column title to sort</li>
+              <li>click inside a row to see details for that issue</li>
+            </ul>
+          </ReactTooltip>
+          <div data-tip data-for="help" className="help">
+            <span>help</span>
+            <FontAwesomeIcon icon={faQuestion} />
+          </div>
+        </>
+      )}
       {displayIssue ? (
         <Issue
           {...displayIssue}

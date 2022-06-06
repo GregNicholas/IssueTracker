@@ -85,7 +85,8 @@ const IssueTable = ({ columns, data, handleClick }) => {
                     background: "aliceblue",
                     color: "black",
                     fontWeight: "bold",
-                    fontSize: "1.25rem"
+                    fontSize: "1.25rem",
+                    cursor: "default"
                   }}
                 >
                   {column.render("Header")}
